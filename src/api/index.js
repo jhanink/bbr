@@ -2,6 +2,7 @@ const express = require("express");
 const serverless = require("serverless-http");
 const { Client } = require('pg');
 const { Sequelize, Op, Model, DataTypes }  = require('sequelize');
+const { User, Game, GameScore, Player, Tournament } = require('./models');
 require('dotenv').config();
 
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -20,6 +21,11 @@ if (dev) {
     try {
       await sequelize.authenticate();
       console.log('Connection has been established successfully.');
+      await Player.sync({ force: true });
+      await Game.sync({ force: true });
+      await GameScore.sync({ force: true });
+      await Player.sync({ force: true });
+      await Tournament.sync({ force: true });
     } catch (error) {
       console.error('Unable to connect to the database:', error);
     }
