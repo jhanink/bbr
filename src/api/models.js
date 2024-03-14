@@ -1,8 +1,8 @@
-const { Sequelize, Op, Model, DataTypes }  = require('sequelize');
+const { Sequelize, Op, Model, DataTypes }  = require('sequelize-cockroachdb');
 require('dotenv').config();
 
 const DATABASE_URL = process.env.DATABASE_URL;
-const sequelize = new Sequelize(DATABASE_URL);
+const sequelize = new Sequelize(DATABASE_URL, {quoteIdentifiers: false});
 
 /**
     id UUID NOT NULL DEFAULT uuid_generate_v4(),

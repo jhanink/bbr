@@ -1,13 +1,7 @@
 const express = require("express");
 const serverless = require("serverless-http");
-const { Client } = require('pg');
-const { Sequelize, Op, Model, DataTypes }  = require('sequelize');
-const { User, Game, GameScore, Player, Tournament } = require('./models');
 require('dotenv').config();
-
-const DATABASE_URL = process.env.DATABASE_URL;
-const sequelize = new Sequelize(DATABASE_URL);
-
+const { db } = require('./db');
 
 const app = express();
 const port = 3000;
@@ -16,27 +10,27 @@ const dev = process.env.NODE_ENV !== "production";
 
 app.use(express.json());
 
-if (dev) {
-  (async () => {
-    try {
-      await sequelize.authenticate();
-      console.log('Connection has been established successfully.');
-      await Player.sync({ force: true });
-      await Game.sync({ force: true });
-      await GameScore.sync({ force: true });
-      await Player.sync({ force: true });
-      await Tournament.sync({ force: true });
-    } catch (error) {
-      console.error('Unable to connect to the database:', error);
-    }
-  })()
-}
-
 // Public API
 //---------------------------
 
+
+app.get("/updateTables", async (req, res) => {
+  console.log('Update Tables')
+  const option = req.params.force ? {force: true} : {alter: true}
+  await db.updateTables(option);
+  res.send("done updating tables")
+});
+
+app.get("/seedUser", async (req, res) => {
+  console.log('seed User')
+  const user = await db.seedUser();
+  res.send(user || "no user")
+});
+
 app.get("/users", async (req, res) => {
-  await queries.getUsers(req, res);
+  console.log('Users')
+  const users = await db.getUsers();
+  res.send(users || "no users")
 });
 
 app.get("/users/:id", async (req, res) => {
